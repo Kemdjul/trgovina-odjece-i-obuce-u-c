@@ -1,8 +1,13 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdlib.h>
 #include <stdio.h>
+#include "structures.h"
 
-void pretraziPoKategoriji() {}
+void pretraziPoKategoriji() {
+	printf("Izaberite broj pored zeljenog proizvoda za opis proizvoda.\n\n");
+
+	
+}
 void pretraziPoImenu() {}
 void kosarica() {}
 
@@ -22,9 +27,9 @@ void guestMenu() {
 	} while (izbor < 1 || izbor > 4);
 
 	switch (izbor) {
-	case 1: pretraziPoKategoriji(); break;
-	case 2: pretraziPoImenu(); break;
-	case 3: kosarica(); break;
+	case 1: system("clear"); pretraziPoKategoriji(); break;
+	case 2: system("clear"); pretraziPoImenu(); break;
+	case 3: system("clear"); kosarica(); break;
 	default: return;
 	}
 }
