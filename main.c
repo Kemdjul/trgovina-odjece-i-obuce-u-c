@@ -3,15 +3,32 @@
 #include <stdlib.h>
 #include "functions.h"
 #include "structures.h"
+#include "memory.h"
 
 int main() {
 	int status = 1;
-	int *brojProizvoda = 0;
-	ARTIKL* skladiste = preuzimanjeSkladista(&brojProizvoda);
+	ARTIKL* skladiste = NULL;
+	int* brojProizvoda = 0;
+	KOSARICA* kosarica = NULL;
+	int* brojArtikalaUKosarici = 0;
 
-	do {
-		program(&status);
-	} while (status != 0);
+	brojProizvoda = (int*)malloc(sizeof(int));
+	if (brojProizvoda == NULL) {
+		perror("Deklariranje brojProizvoda u main()");
+		exit(1);
+	}
+	*brojProizvoda = 0;
+
+	brojArtikalaUKosarici = (int*)malloc(sizeof(int));
+	if (brojArtikalaUKosarici == NULL) {
+		perror("Deklariranje brojArtikalaUKosarici u main()");
+		exit(1);
+	}
+	*brojArtikalaUKosarici = 0;
+
+	skladiste = preuzimanjeSkladista(brojProizvoda);
+
+	program(&status, skladiste, brojProizvoda, kosarica, brojArtikalaUKosarici);
 
 	return 0;
 }

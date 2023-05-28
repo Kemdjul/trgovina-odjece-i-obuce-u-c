@@ -6,6 +6,14 @@ typedef struct {
 	char ime[20];
 	float cijena;
 	int zaliha;
+	char kategorija;
 }ARTIKL;
+
+typedef struct {
+	int id;
+	char ime[20];
+	int kolicina;
+	float cijena;
+}KOSARICA;
 
 #endif
