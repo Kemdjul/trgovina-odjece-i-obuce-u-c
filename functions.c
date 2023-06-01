@@ -5,9 +5,62 @@
 #include "structures.h"
 #include "memory.h"
 
+ARTIKL* modificirajProizvod(ARTIKL* artikl) {
+	int izbor = 0;
+
+	do {
+		printf("-----------------------------------------------------------------------------\n");
+		printf("\t\t\tDobrodosli, admin\n");
+		printf("-----------------------------------------------------------------------------\n\n");
+
+		printf("Ime proizvoda: %s\n", artikl->ime);
+		printf("Cijena: %.2fe\n", artikl->cijena);
+		printf("Na zalihi: %d\n", artikl->zaliha);
+		printf("Opis proizvoda: \n\n");
+		printf("1. Promijeni ime\n2.Promijeni cijenu\n3.Promijeni zalihu\n4. Promijeni opis\n5. Izlaz\n\n");
+
+		scanf(" %d", &izbor);
+
+		if (izbor < 1 || izbor > 5) {
+			system("cls");
+			printf("Krivi unos, pokusajte ponovno\n");
+		}
+
+		switch (izbor) {
+		case 1: {
+			printf("\nUnesite novo ime proizvoda: ");
+			scanf(" %20s", &(artikl->ime));
+			system("cls");
+			printf("Ime uspjesno azurirano.\n");
+			break;
+		}
+		case 2: {
+			printf("\nUnesite novu cijenu proizvoda: ");
+			scanf(" %f", &(artikl->cijena));
+			system("cls");
+			printf("Cijena uspjesno azurirana.\n");
+			break;
+		}
+		case 3: {
+			printf("\nUnesite broj dostupnih artikala: ");
+			scanf(" %d", &(artikl->zaliha));
+			system("cls");
+			printf("Stanje uspjesno azurirano.\n");
+			break;
+		}
+		case 4: {
+			printf("\nUnesite novi opis: ");
+			break;
+		}
+		case 5: return artikl;
+		}
+	} while (1);
+}
+
 ARTIKL* adminOProizvodu(ARTIKL* skladiste, int** brojProizvoda, int id) {
 	int izbor = 0;
 	int i = 0;
+	ARTIKL* temp = NULL;
 	
 	for (i = 0; i < **brojProizvoda; ++i) {
 		if (skladiste[i].id == id) break;
@@ -15,24 +68,57 @@ ARTIKL* adminOProizvodu(ARTIKL* skladiste, int** brojProizvoda, int id) {
 
 	do {
 		printf("-----------------------------------------------------------------------------\n");
-		printf("\t\t\tDobrodosli, guest\n");
+		printf("\t\t\tDobrodosli, admin\n");
 		printf("-----------------------------------------------------------------------------\n\n");
 		printf("Ime proizvoda: %s\n", skladiste[i].ime);
 		printf("Cijena: %.2fe\n", skladiste[i].cijena);
 		printf("Na zalihi: %d\n", skladiste[i].zaliha);
 		printf("Opis proizvoda: \n\n");
-		printf("1. Dodaj u kosaricu\n2.Izlaz\n");
+		printf("1. Modificiraj proizvod\n2. Obrisi proizvod\n3. Izlaz\n\n");
 
 		scanf(" %d", &izbor);
-		if (izbor < 1 || izbor > 2) {
+		if (izbor < 1 || izbor > 3) {
 			system("cls");
 			printf("Krivi unos, pokušajte ponovno.\n\n");
 		}
-	} while (izbor < 1 || izbor > 2);
+	
 
-	system("cls");
+		switch (izbor) {
+			case 1: {
+				system("cls");
 
-	return skladiste;
+				temp = skladiste + i; 
+				modificirajProizvod(temp);
+				*(skladiste + i) = *temp;
+
+				temp = NULL;
+				return skladiste;
+			}
+			case 2: {
+				system("cls");
+
+				for (; i < **brojProizvoda; ++i) {
+					*temp = *(skladiste + i + 1);
+					*(skladiste + i + 1) = *(skladiste + i);
+					*(skladiste + i) = *temp;
+				}
+
+				temp = (ARTIKL*)realloc(skladiste, (**(brojProizvoda) - 1) * sizeof(ARTIKL));
+				if (temp == NULL) {
+					perror("Realociranje skladista u adminOProizvodu()");
+					exit(1);
+				}
+
+				skladiste = temp;
+				*brojProizvoda = *brojProizvoda - 1;
+
+				free(temp);
+				return skladiste;
+			}
+		}
+	} while (1);
+
+	
 }
 
 ARTIKL* adminListaProizvoda(ARTIKL* skladiste, int* brojProizvoda, char c) {
@@ -42,6 +128,8 @@ ARTIKL* adminListaProizvoda(ARTIKL* skladiste, int* brojProizvoda, char c) {
 		int brojRazvrstanih = 0;
 		ARTIKL* razvrstani = NULL;
 		razvrstani = razdvojiKategoriju(c, brojProizvoda, skladiste, &brojRazvrstanih);
+
+		system("cls");
 		printf("-----------------------------------------------------------------------------\n");
 		printf("\t\t\tDobrodosli, admin\n");
 		printf("-----------------------------------------------------------------------------\n\n");
@@ -68,7 +156,7 @@ ARTIKL* adminListaProizvoda(ARTIKL* skladiste, int* brojProizvoda, char c) {
 			if (razvrstani[i].id == odabirProizvoda) {
 				system("cls");
 				skladiste = adminOProizvodu(skladiste, &brojProizvoda, razvrstani[i].id);
-				odabirProizvoda = -1;
+				odabirProizvoda -= 1;
 			}
 		}
 
@@ -205,8 +293,7 @@ KOSARICA* oProizvodu(ARTIKL* artikl, KOSARICA* kosarica, int* brojArtikalaUKosar
 			}
 
 			else if (kolicina > artikl->zaliha) {
-				system("cls");
-				printf("Krivi unos, pokusajte ponovno.\n");
+				printf("\nKrivi unos, pokusajte ponovno.\n");
 			}
 
 		} while (kolicina > artikl->zaliha);
@@ -394,29 +481,37 @@ KOSARICA* prikaziKosaricu(KOSARICA* kosarica, int* brojArtikalaUKosarici, ARTIKL
 			printf("\t\t\tDobrodosli, guest\n");
 			printf("-----------------------------------------------------------------------------\n\n");
 
-			printf("Koji artikl zelite ukloniti?");
+			printf("Koji artikl zelite ukloniti?\n");
 			for (int i = 0; i < *brojArtikalaUKosarici; ++i) {
 				printf("%d. %s\n", kosarica[i].id, kosarica[i].ime);
 			}
 
 			scanf(" %d", &izbor);
-			for (int i = 0; i < *brojArtikalaUKosarici; ++i) {
-				if (izbor == kosarica[i].id) {
-					for (int j = i; j < *brojArtikalaUKosarici; ++j) {
-						*temp = *(kosarica + j + 1);
-						*(kosarica + j + 1) = *(kosarica + j);
-						*(kosarica + j) = *temp;
-					}
+			if (*brojArtikalaUKosarici == 1) {
+				free(kosarica);
+				*brojArtikalaUKosarici = 0;
+			}
+			
+			else {
+				for (int i = 0; i < *brojArtikalaUKosarici; ++i) {
+					if (izbor == kosarica[i].id) {
+						for (int j = i; j < *brojArtikalaUKosarici; ++j) {
+							*temp = *(kosarica + j + 1);
+							*(kosarica + j + 1) = *(kosarica + j);
+							*(kosarica + j) = *temp;
+						}
 
-					kosarica = (KOSARICA*)realloc(kosarica, (*brojArtikalaUKosarici - 1) * sizeof(KOSARICA));
-					if (kosarica == NULL) {
-						perror("Realociranje kosarice u prikaziKosaricu()");
-						exit(1);
-					}
+						kosarica = (KOSARICA*)realloc(kosarica, (*brojArtikalaUKosarici - 1) * sizeof(KOSARICA));
+						if (kosarica == NULL) {
+							perror("Realociranje kosarice u prikaziKosaricu()");
+							exit(1);
+						}
 
-					*brojArtikalaUKosarici = *brojArtikalaUKosarici - 1;
+						*brojArtikalaUKosarici = *brojArtikalaUKosarici - 1;
+					}
 				}
-			} 
+			}
+			
 		} while (izbor < 0);
 
 		system("cls");
