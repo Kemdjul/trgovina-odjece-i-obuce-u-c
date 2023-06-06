@@ -61,6 +61,8 @@ ARTIKL* adminOProizvodu(ARTIKL* skladiste, int** brojProizvoda, int id) {
 	int izbor = 0;
 	int i = 0;
 	ARTIKL* temp = NULL;
+
+	temp = (ARTIKL*)malloc(sizeof(ARTIKL));
 	
 	for (i = 0; i < **brojProizvoda; ++i) {
 		if (skladiste[i].id == id) break;
@@ -110,12 +112,16 @@ ARTIKL* adminOProizvodu(ARTIKL* skladiste, int** brojProizvoda, int id) {
 				}
 
 				skladiste = temp;
-				*brojProizvoda = *brojProizvoda - 1;
+				**brojProizvoda = **brojProizvoda - 1;
 
-				free(temp);
+				temp = NULL;
+
+				unosProizvoda(skladiste, *brojProizvoda);
+
 				return skladiste;
 			}
 		}
+		
 	} while (1);
 
 	
@@ -233,7 +239,7 @@ ARTIKL* dodajProizvod(ARTIKL* skladiste, int* brojProizvoda) {
 		case 3: kategorija = 'o'; break;
 	}
 
-	skladiste = unosProizvoda(skladiste, brojProizvoda, ime, &cijena, &zaliha, &kategorija);
+	skladiste = noviProizvod(skladiste, brojProizvoda, ime, &cijena, &zaliha, &kategorija);
 
 	return skladiste;
 }

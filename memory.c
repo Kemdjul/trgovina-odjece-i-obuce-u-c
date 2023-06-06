@@ -3,7 +3,22 @@
 #include <stdlib.h>
 #include "structures.h"
 
-ARTIKL* unosProizvoda(ARTIKL* skladiste, int* brojProizvoda, char ime[20], float* cijena, int* zaliha, char* kategorija) {
+void unosProizvoda(ARTIKL* skladiste, int* brojProizvoda) {
+	FILE* fp = NULL;
+	fp = fopen("skladiste.txt", "w+");
+	if (fp == NULL) {
+		perror("Otvaranje datoteke 'skladiste.txt' u unosProizvoda()");
+		exit(1);
+	}
+
+	for (int i = 0; i < *brojProizvoda; ++i) {
+		fprintf(fp, "%d %s %f %d %c\n", skladiste[i].id, skladiste[i].ime, skladiste[i].cijena, skladiste[i].zaliha, skladiste[i].kategorija);
+	}
+
+	fclose(fp);
+}
+
+ARTIKL* noviProizvod(ARTIKL* skladiste, int* brojProizvoda, char ime[20], float* cijena, int* zaliha, char* kategorija) {
 	*brojProizvoda += 1;
 	skladiste = (ARTIKL*)realloc(skladiste, *brojProizvoda * sizeof(ARTIKL));
 	if (skladiste == NULL) {
