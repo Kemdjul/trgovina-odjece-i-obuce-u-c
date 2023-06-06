@@ -28,7 +28,10 @@ int main() {
 
 	skladiste = preuzimanjeSkladista(brojProizvoda);
 
-	program(&status, skladiste, brojProizvoda, kosarica, brojArtikalaUKosarici);
+	program(&status, skladiste, &brojProizvoda, kosarica, brojArtikalaUKosarici);
+
+	free(skladiste);
+	free(kosarica);
 
 	return 0;
 }

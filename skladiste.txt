@@ -1,4 +1,5 @@
-0 Majica 7.990000 1 d
+0 Majica 8.990000 3 g
 1 Hlace 12.990000 1 d
 2 Patike 15.990000 3 o
-3 Duksa 13.990000 2 g
+3 Duksa 13.990000 1 g
+4 Kratka majica 13.990000 2 g

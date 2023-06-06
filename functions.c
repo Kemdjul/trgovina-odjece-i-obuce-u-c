@@ -63,7 +63,7 @@ ARTIKL* adminOProizvodu(ARTIKL* skladiste, int** brojProizvoda, int id) {
 	ARTIKL* temp = NULL;
 
 	temp = (ARTIKL*)malloc(sizeof(ARTIKL));
-	
+
 	for (i = 0; i < **brojProizvoda; ++i) {
 		if (skladiste[i].id == id) break;
 	}
@@ -83,13 +83,13 @@ ARTIKL* adminOProizvodu(ARTIKL* skladiste, int** brojProizvoda, int id) {
 			system("cls");
 			printf("Krivi unos, pokušajte ponovno.\n\n");
 		}
-	
+
 
 		switch (izbor) {
 			case 1: {
 				system("cls");
 
-				temp = skladiste + i; 
+				temp = skladiste + i;
 				modificirajProizvod(temp);
 				*(skladiste + i) = *temp;
 
@@ -105,7 +105,7 @@ ARTIKL* adminOProizvodu(ARTIKL* skladiste, int** brojProizvoda, int id) {
 					*(skladiste + i) = *temp;
 				}
 
-				temp = (ARTIKL*)realloc(skladiste, (**(brojProizvoda) - 1) * sizeof(ARTIKL));
+				temp = (ARTIKL*)realloc(skladiste, (**(brojProizvoda)-1) * sizeof(ARTIKL));
 				if (temp == NULL) {
 					perror("Realociranje skladista u adminOProizvodu()");
 					exit(1);
@@ -120,20 +120,57 @@ ARTIKL* adminOProizvodu(ARTIKL* skladiste, int** brojProizvoda, int id) {
 
 				return skladiste;
 			}
+			case 3: system("cls"); return skladiste;
+			default: break;
 		}
-		
-	} while (1);
 
-	
+	} while (1);
 }
 
-ARTIKL* adminListaProizvoda(ARTIKL* skladiste, int* brojProizvoda, char c) {
+ARTIKL* adminPretrazivanjePoImenu(ARTIKL* skladiste, int** brojProizvoda) {
+	char ime[20];
+
+	printf("-----------------------------------------------------------------------------\n");
+	printf("\t\t\tDobrodosli, admin\n");
+	printf("-----------------------------------------------------------------------------\n\n");
+
+	printf("Unesite ime trazenog proizvoda: ");
+	scanf(" %s", ime);
+
+	system("cls");
+
+	printf("-----------------------------------------------------------------------------\n");
+	printf("\t\t\tDobrodosli, admin\n");
+	printf("-----------------------------------------------------------------------------\n\n");
+
+	printf("Pronadjeni proizvodi:\n\n");
+
+	for (int i = 0; i < **brojProizvoda; ++i) {
+		if (strstr(skladiste[i].ime, ime) != NULL) {
+			printf("%d. %s %.2fe\n", skladiste[i].id, skladiste[i].ime, skladiste[i].cijena);
+		}
+	}
+
+	int odabir = 0;
+	scanf(" %d", &odabir);
+
+	for (int i = 0; i < **brojProizvoda; ++i) {
+		if (skladiste[i].id == odabir) {
+			system("cls");
+			skladiste = adminOProizvodu(skladiste, brojProizvoda, odabir);
+		}
+	}
+
+	return skladiste;
+}
+
+ARTIKL* adminListaProizvoda(ARTIKL* skladiste, int** brojProizvoda, char c) {
 	int odabirProizvoda = 0;
 
 	do {
 		int brojRazvrstanih = 0;
 		ARTIKL* razvrstani = NULL;
-		razvrstani = razdvojiKategoriju(c, brojProizvoda, skladiste, &brojRazvrstanih);
+		razvrstani = razdvojiKategoriju(c, *brojProizvoda, skladiste, &brojRazvrstanih);
 
 		system("cls");
 		printf("-----------------------------------------------------------------------------\n");
@@ -161,7 +198,7 @@ ARTIKL* adminListaProizvoda(ARTIKL* skladiste, int* brojProizvoda, char c) {
 		for (int i = 0; i < brojRazvrstanih; ++i) {
 			if (razvrstani[i].id == odabirProizvoda) {
 				system("cls");
-				skladiste = adminOProizvodu(skladiste, &brojProizvoda, razvrstani[i].id);
+				skladiste = adminOProizvodu(skladiste, brojProizvoda, odabirProizvoda);
 				odabirProizvoda -= 1;
 			}
 		}
@@ -175,7 +212,7 @@ ARTIKL* adminListaProizvoda(ARTIKL* skladiste, int* brojProizvoda, char c) {
 	return skladiste;
 }
 
-ARTIKL* adminPretrazivanjePoKategoriji(ARTIKL* skladiste, int* brojProizvoda) {
+ARTIKL* adminPretrazivanjePoKategoriji(ARTIKL* skladiste, int** brojProizvoda) {
 	int izbor = 0;
 
 	do {
@@ -244,7 +281,7 @@ ARTIKL* dodajProizvod(ARTIKL* skladiste, int* brojProizvoda) {
 	return skladiste;
 }
 
-ARTIKL* adminMenu(ARTIKL* skladiste, int* brojProizvoda, int* status) {
+ARTIKL* adminMenu(ARTIKL* skladiste, int** brojProizvoda, int* status) {
 	int izbor = 0;
 
 	do {
@@ -257,9 +294,10 @@ ARTIKL* adminMenu(ARTIKL* skladiste, int* brojProizvoda, int* status) {
 		scanf(" %d", &izbor);
 
 		switch (izbor) {
-		case 1: system("cls"); skladiste = dodajProizvod(skladiste, brojProizvoda); break;
+		case 1: system("cls"); skladiste = dodajProizvod(skladiste, *brojProizvoda); break;
 		case 2: system("cls"); skladiste = adminPretrazivanjePoKategoriji(skladiste, brojProizvoda); break;
-		case 4: *status = 0;
+		case 3: system("cls"); skladiste = adminPretrazivanjePoImenu(skladiste, brojProizvoda); break;
+		case 4: *status = 0; break;
 		default: system("cls"); printf("Krivi unos, pokusajte ponovno.\n"); break;
 		}
 	} while (*status != 0);
@@ -267,16 +305,16 @@ ARTIKL* adminMenu(ARTIKL* skladiste, int* brojProizvoda, int* status) {
 	return skladiste;
 }
 
-KOSARICA* oProizvodu(ARTIKL* artikl, KOSARICA* kosarica, int* brojArtikalaUKosarici) {
+KOSARICA* oProizvodu(ARTIKL** artikl, KOSARICA* kosarica, int* brojArtikalaUKosarici) {
 	int izbor = 0;
 
 	do {
 		printf("-----------------------------------------------------------------------------\n");
 		printf("\t\t\tDobrodosli, guest\n");
 		printf("-----------------------------------------------------------------------------\n\n");
-		printf("Ime proizvoda: %s\n", artikl->ime);
-		printf("Cijena: %.2fe\n", artikl->cijena);
-		printf("Na zalihi: %d\n", artikl->zaliha);
+		printf("Ime proizvoda: %s\n", (*artikl)->ime);
+		printf("Cijena: %.2fe\n", (*artikl)->cijena);
+		printf("Na zalihi: %d\n", (*artikl)->zaliha);
 		printf("Opis proizvoda: \n\n");
 		printf("1. Dodaj u kosaricu\n2.Izlaz\n");
 
@@ -298,15 +336,14 @@ KOSARICA* oProizvodu(ARTIKL* artikl, KOSARICA* kosarica, int* brojArtikalaUKosar
 				return kosarica;
 			}
 
-			else if (kolicina > artikl->zaliha) {
+			else if (kolicina > (*artikl)->zaliha) {
 				printf("\nKrivi unos, pokusajte ponovno.\n");
 			}
 
-		} while (kolicina > artikl->zaliha);
+		} while (kolicina > (*artikl)->zaliha);
 
-		if (kolicina != -1) {
-			kosarica = dodajUKosaru(artikl, &kolicina, kosarica, brojArtikalaUKosarici);
-		}
+		(*artikl)->zaliha -= kolicina;
+		kosarica = dodajUKosaru(*artikl, &kolicina, kosarica, brojArtikalaUKosarici);
 	}
 
 	system("cls");
@@ -345,7 +382,14 @@ KOSARICA* listaProizvoda(ARTIKL* skladiste, int* brojProizvoda, char c, KOSARICA
 		for (int i = 0; i < brojRazvrstanih; ++i) {
 			if (razvrstani[i].id == odabirProizvoda) {
 				system("cls");
-				kosarica = oProizvodu(&razvrstani[i], kosarica, brojArtikalaUKosarici);
+				kosarica = oProizvodu((&razvrstani + i), kosarica, brojArtikalaUKosarici);
+
+				for (int j = 0; j < *brojProizvoda; ++j) {
+					if (skladiste[j].id == razvrstani[i].id) {
+						skladiste[j].zaliha = razvrstani[i].zaliha;
+					}
+				}
+
 				odabirProizvoda = -1;
 			}
 		}
@@ -387,6 +431,7 @@ KOSARICA* pretraziPoKategoriji(ARTIKL* skladiste, int* brojProizvoda, KOSARICA* 
 
 	return kosarica;
 }
+
 KOSARICA* pretraziPoImenu(ARTIKL* skladiste, int* brojProizvoda, KOSARICA* kosarica, int* brojArtikalaUKosarici) {
 	printf("-----------------------------------------------------------------------------\n");
 	printf("\t\t\tDobrodosli, guest\n");
@@ -416,14 +461,14 @@ KOSARICA* pretraziPoImenu(ARTIKL* skladiste, int* brojProizvoda, KOSARICA* kosar
 	for (int i = 0; i < *brojProizvoda; ++i) {
 		if (skladiste[i].id == odabir) {
 			system("cls");
-			kosarica = oProizvodu(&skladiste[i], kosarica, brojArtikalaUKosarici);
+			kosarica = oProizvodu((&skladiste + i), kosarica, brojArtikalaUKosarici);
 		}
 	}
 
 	return kosarica;
 }
 
-KOSARICA* prikaziKosaricu(KOSARICA* kosarica, int* brojArtikalaUKosarici, ARTIKL* skladiste, int* brojProizvoda) { 
+KOSARICA* prikaziKosaricu(KOSARICA* kosarica, int* brojArtikalaUKosarici, ARTIKL** skladiste, int* brojProizvoda) { 
 	int izbor = 0;
 	float ukupno = 0.0;
 	KOSARICA* temp = NULL;
@@ -468,7 +513,7 @@ KOSARICA* prikaziKosaricu(KOSARICA* kosarica, int* brojArtikalaUKosarici, ARTIKL
 			scanf(" %d", &izbor);
 			switch (izbor) {
 			case 1: 
-				upisatiUSkladiste(skladiste, brojProizvoda);
+				upisatiUSkladiste(*skladiste, brojProizvoda);
 				kosarica = NULL; 
 				*brojArtikalaUKosarici = 0; 
 				ukupno = 0; system("cls"); 
@@ -494,6 +539,13 @@ KOSARICA* prikaziKosaricu(KOSARICA* kosarica, int* brojArtikalaUKosarici, ARTIKL
 
 			scanf(" %d", &izbor);
 			if (*brojArtikalaUKosarici == 1) {
+
+				for (int i = 0; i < *brojProizvoda; ++i) {
+					if ((*skladiste + i)->id == kosarica->id) {
+						(*skladiste + i)->zaliha = kosarica->kolicina;
+					}
+				}
+
 				free(kosarica);
 				*brojArtikalaUKosarici = 0;
 			}
@@ -505,6 +557,12 @@ KOSARICA* prikaziKosaricu(KOSARICA* kosarica, int* brojArtikalaUKosarici, ARTIKL
 							*temp = *(kosarica + j + 1);
 							*(kosarica + j + 1) = *(kosarica + j);
 							*(kosarica + j) = *temp;
+						}
+
+						for (int z = 0; z < *brojProizvoda; ++z) {
+							if ((*skladiste + i)->id == kosarica[*brojArtikalaUKosarici - 1].id) {
+								(*skladiste + i)->zaliha = kosarica[*brojArtikalaUKosarici - 1].kolicina;
+							}
 						}
 
 						kosarica = (KOSARICA*)realloc(kosarica, (*brojArtikalaUKosarici - 1) * sizeof(KOSARICA));
@@ -551,14 +609,14 @@ void guestMenu(ARTIKL* skladiste, int* brojProizvoda, int* status, KOSARICA* kos
 		switch (izbor) {
 		case 1: system("cls"); kosarica = pretraziPoKategoriji(skladiste, brojProizvoda, kosarica, brojArtikalaUKosarici); break;
 		case 2: system("cls"); kosarica = pretraziPoImenu(skladiste, brojProizvoda, kosarica, brojArtikalaUKosarici); break;
-		case 3: system("cls"); kosarica = prikaziKosaricu(kosarica, brojArtikalaUKosarici, skladiste, brojProizvoda); break;
+		case 3: system("cls"); kosarica = prikaziKosaricu(kosarica, brojArtikalaUKosarici, &skladiste, brojProizvoda); break;
 		case 4: *status = 0; return;
 		default: break;
 		}
 	} while (status != 0);
 }
 
-void program(int* status, ARTIKL* skladiste, int* brojProizvoda, KOSARICA* kosarica, int* brojArtikalaUKosarici) {
+void program(int* status, ARTIKL* skladiste, int** brojProizvoda, KOSARICA* kosarica, int* brojArtikalaUKosarici) {
 	int izbor = 0;
 
 	do {
@@ -578,7 +636,7 @@ void program(int* status, ARTIKL* skladiste, int* brojProizvoda, KOSARICA* kosar
 
 	if (izbor == 1) {
 		system("cls");
-		guestMenu(skladiste, brojProizvoda, status, kosarica, brojArtikalaUKosarici);
+		guestMenu(skladiste, *brojProizvoda, status, kosarica, brojArtikalaUKosarici);
 	}
 	
 	else if (izbor == 2) {
