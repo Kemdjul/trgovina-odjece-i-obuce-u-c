@@ -1,0 +1,35 @@
+1. Guest
+Dodaj bilo koja dva artikla u kosaricu
+3. Prikaži košaricu
+2. Ukloni artikl
+2. Ukloni drugi artikl
+
+Problem: Breakpoint
+
+
+
+1. Guest
+Dodaj bilo koja dva artikla u kosaricu
+3. Prikazi kosaricu
+2. Ukloni artikl
+1. Ukloni prvi artikl
+
+Problem: Exit error
+
+
+
+2. Admin
+3. Pretrazivanje po imenu
+Unesi bilo koji proizvod
+Unesi broj koji nije ID proizvoda
+
+Problem: Ne obrise se stari tekst, nema provjere unosa, nema mogućnosti izlaza
+
+
+
+2. Admin
+2. Pretrazivanje po kategoriji
+Odaberi bilo koji proizvod
+3. Izlaz
+
+Problem: Vraća na listu proizvoda

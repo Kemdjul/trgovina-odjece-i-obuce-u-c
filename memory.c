@@ -98,7 +98,7 @@ ARTIKL* razdvojiKategoriju(char c, int* brojProizvoda, ARTIKL* skladiste, int* b
 			(*brojRazdvojenih)++;
 		}
 	}
-	
+
 	return temp;
 }
 
@@ -121,6 +121,8 @@ ARTIKL* preuzimanjeSkladista(int* brojProizvoda) {
 	int i = 1;
 
 	while ((status = fscanf(fp, "%d %s %f %d %c", &skladiste[i - 1].id, &skladiste[i - 1].ime, &skladiste[i - 1].cijena, &skladiste[i - 1].zaliha, &skladiste[i - 1].kategorija)) != EOF) {
+		if (status == 0) break;
+
 		++i;
 		(*brojProizvoda)++;
 
